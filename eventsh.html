@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumni Events | Alumni Association Platform</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="indexs.css">
+    <link rel="stylesheet" href="evh.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="nav-logo">Alumni Connect</div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="eventsh.html" class="active">Events</a>
+                <a href="#">College</a>
+                <a href="#">News</a>
+                <a href="#">Donate</a>
+                <button class="sign-in-btn"><a href="login.html">Login</a></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section for Events Page -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Upcoming Alumni Events</h1>
+            <p>Join us at these exciting events and stay connected with your alumni network!</p>
+        </div>
+    </section>
+
+    <!-- Events Section -->
+    <section class="events">
+        <div class="events-container">
+
+            <!-- Section for Current Events -->
+            <h2 class="section-title">Current Events</h2>
+            <div class="event-section current-events">
+                <div class="event-row">
+                    <!-- Recent Event 1 -->
+                    <div class="event-card gradient-card">
+                        <img src="imgs\img1.jpg" alt="Annual Homecoming" class="event-image">
+                        <h3>Annual Homecoming</h3>
+                        <p class="event-date">October 15, 2024</p>
+                        <p class="event-location">Campus Grounds</p>
+                        <p class="event-description">
+                            Come celebrate with fellow alumni and students at our annual homecoming. Enjoy food, drinks, games, and more!
+                        </p>
+                        <a href="#" class="cta-button">Register Now</a>
+                    </div>
+
+                    <!-- Recent Event 2 -->
+                    <div class="event-card gradient-card">
+                        <img src="imgs\img2.jpg" alt="Alumni Gala 2024" class="event-image">
+                        <h3>Alumni Gala 2024</h3>
+                        <p class="event-date">August 10, 2024</p>
+                        <p class="event-location">Grand Ballroom, City Hotel</p>
+                        <p class="event-description">
+                            An exclusive gala for alumni to reconnect, share stories, and support future graduates.
+                        </p>
+                        <a href="#" class="cta-button">Register Now</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section for Future Events -->
+            <h2 class="section-title">Future Events</h2>
+            <div class="event-section future-events">
+                <div class="event-row">
+                    <!-- Future Event 1 -->
+                    <div class="event-card gradient-card">
+                        <img src="imgs/img3.jpg" alt="Career Fair" class="event-image">
+                        <h3>Career Fair</h3>
+                        <p class="event-date">November 5, 2024</p>
+                        <p class="event-location">University Hall, Room 101</p>
+                        <p class="event-description">
+                            This career fair is your opportunity to network with top companies and explore career opportunities.
+                        </p>
+                        <a href="#" class="cta-button">Register Now</a>
+                    </div>
+
+                    <!-- Future Event 2 -->
+                    <div class="event-card gradient-card">
+                        <img src="imgs\img4.jpg" alt="Winter Gala" class="event-image">
+                        <h3>Winter Gala</h3>
+                        <p class="event-date">December 12, 2024</p>
+                        <p class="event-location">Grand Ballroom, City Hotel</p>
+                        <p class="event-description">
+                            Join us for a magical evening of dancing, dining, and celebration. It's the perfect way to end the year!
+                        </p>
+                        <a href="#" class="cta-button">Register Now</a>
+                    </div>
+
+                    <!-- Future Event 3 -->
+                    <div class="event-card gradient-card">
+                        <img src="imgs\img5.jpg" alt="Alumni Networking Mixer" class="event-image">
+                        <h3>Alumni Networking Mixer</h3>
+                        <p class="event-date">January 15, 2025</p>
+                        <p class="event-location">Alumni Center, University</p>
+                        <p class="event-description">
+                            Join us for an evening of networking, sharing career insights, and building lasting professional connections.
+                        </p>
+                        <a href="#" class="cta-button">Register Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h4>Contact Us</h4>
+                <p>123 University Ave</p>
+                <p>City, State 12345</p>
+                <p>alumni@university.edu</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Career Services</a></li>
+                    <li><a href="#">Give Back</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Connect</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Facebook</a></li>
+                    <li><a href="#">LinkedIn</a></li>
+                    <li><a href="#">Twitter</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Newsletter</h4>
+                <p>Stay updated with alumni news and events</p>
+                <form action="newsletter-submit.php" method="POST">
+                    <input type="email" name="email" placeholder="Enter your email" class="newsletter-input" required>
+                    <button type="submit">Subscribe</button>
+                </form>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>© 2024 Alumni Association. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

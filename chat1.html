@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <link rel="stylesheet" href="chat.css">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <a href="connection.html" class="back-button">←</a>
+            <div class="user-info">
+                <img src="/api/placeholder/40/40" alt="Profile picture" class="profile-pic">
+                <div class="user-details">
+                    <h2 class="username">John Doe</h2>
+                    <span class="status">Online</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="messages-container">
+            <div class="message-date">Today</div>
+            
+            <div class="message received">
+                <div class="message-content">
+                    <p>Hey! How are you doing?</p>
+                    <span class="timestamp">10:30 AM</span>
+                </div>
+            </div>
+
+            <div class="message sent">
+                <div class="message-content">
+                    <p>I'm doing great! Just finished my project presentation. How about you?</p>
+                    <span class="timestamp">10:32 AM</span>
+                </div>
+            </div>
+
+            <div class="message received">
+                <div class="message-content">
+                    <p>That's awesome! How did the presentation go?</p>
+                    <span class="timestamp">10:33 AM</span>
+                </div>
+            </div>
+
+            <div class="message sent">
+                <div class="message-content">
+                    <p>It went really well! The client loved our proposals and we got great feedback.</p>
+                    <span class="timestamp">10:35 AM</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-input">
+            <form id="message-form">
+                <input type="text" placeholder="Type your message..." id="message-input">
+                <button type="submit" class="send-button">Send</button>
+            </form>
+        </div>
+    </div>
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    
+    <!-- Your chat.js file -->
+    <script type="module" src="chat.js">
+
+    // Import Firebase functions and initialize
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js';
+import { 
+    getFirestore, 
+    collection, 
+    addDoc, 
+    query, 
+    where, 
+    orderBy, 
+    onSnapshot,
+    serverTimestamp,
+    doc,
+    getDoc 
+} from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js';
+
+// Initialize Firebase (you'll need to add your config)
+const firebaseConfig = {
+    apiKey: "your-api-key",
+    authDomain: "your-auth-domain",
+    projectId: "your-project-id",
+    storageBucket: "your-storage-bucket",
+    messagingSenderId: "your-messaging-sender-id",
+    appId: "your-app-id"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// DOM Elements
+const messageForm = document.getElementById('message-form');
+const messageInput = document.getElementById('message-input');
+const messagesContainer = document.querySelector('.messages-container');
+const userInfo = document.querySelector('.user-details .username');
+const userStatus = document.querySelector('.user-details .status');
+
+let currentUser = null;
+let otherUserId = null;
+let chatRoomId = null;
+
+// Get other user's ID from URL parameters
+const urlParams = new URLSearchParams(window.location.search);
+otherUserId = urlParams.get('userId');
+
+// Authentication state observer
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        currentUser = user;
+        await setupChat();
+    } else {
+        window.location.href = 'login.html';
+    }
+});
+
+// Setup chat
+async function setupChat() {
+    try {
+        // Check if users are connected
+        const connectionQuery = query(
+            collection(db, 'connections'),
+            where('users', 'array-contains', currentUser.uid),
+        );
+        
+        const connectionSnapshot = await getDoc(connectionQuery);
+        const isConnected = connectionSnapshot.docs.some(doc => 
+            doc.data().users.includes(otherUserId) && 
+            doc.data().status === 'accepted'
+        );
+
+        if (!isConnected) {
+            alert('You need to be connected with this user to chat');
+            window.location.href = 'connection.html';
+            return;
+        }
+
+        // Get other user's details
+        const otherUserDoc = await getDoc(doc(db, 'users', otherUserId));
+        const otherUserData = otherUserDoc.data();
+        userInfo.textContent = otherUserData.fullName;
+
+        // Create or get chatroom ID (smaller UID first to ensure consistency)
+        chatRoomId = [currentUser.uid, otherUserId].sort().join('_');
+
+        // Listen for messages
+        listenToMessages();
+
+        // Set up message form
+        messageForm.addEventListener('submit', sendMessage);
+
+    } catch (error) {
+        console.error("Error setting up chat:", error);
+        alert('Error setting up chat. Please try again.');
+    }
+}
+
+// Listen to messages in real-time
+function listenToMessages() {
+    const messagesQuery = query(
+        collection(db, 'chatrooms', chatRoomId, 'messages'),
+        orderBy('timestamp', 'asc')
+    );
+
+    onSnapshot(messagesQuery, (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+            if (change.type === 'added') {
+                displayMessage(change.doc.data());
+            }
+        });
+        // Scroll to bottom after new messages
+        scrollToBottom();
+    });
+}
+
+// Send a message
+async function sendMessage(e) {
+    e.preventDefault();
+    
+    const messageText = messageInput.value.trim();
+    if (!messageText) return;
+
+    try {
+        await addDoc(collection(db, 'chatrooms', chatRoomId, 'messages'), {
+            text: messageText,
+            senderId: currentUser.uid,
+            timestamp: serverTimestamp(),
+        });
+
+        // Clear input
+        messageInput.value = '';
+        
+    } catch (error) {
+        console.error("Error sending message:", error);
+        alert('Error sending message. Please try again.');
+    }
+}
+
+// Display a message in the UI
+function displayMessage(messageData) {
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('message');
+    messageElement.classList.add(
+        messageData.senderId === currentUser.uid ? 'sent' : 'received'
+    );
+
+    const timestamp = messageData.timestamp?.toDate() || new Date();
+    const timeString = timestamp.toLocaleTimeString([], { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+    });
+
+    messageElement.innerHTML = `
+        <div class="message-content">
+            <p>${escapeHtml(messageData.text)}</p>
+            <span class="timestamp">${timeString}</span>
+        </div>
+    `;
+
+    messagesContainer.appendChild(messageElement);
+    scrollToBottom();
+}
+
+// Helper function to scroll to bottom of messages
+function scrollToBottom() {
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+// Helper function to escape HTML (prevent XSS)
+function escapeHtml(unsafe) {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+// Update last seen status
+function updateUserStatus() {
+    const userStatusRef = doc(db, 'users', currentUser.uid);
+    setDoc(userStatusRef, {
+        lastSeen: serverTimestamp()
+    }, { merge: true });
+}
+
+// Set up presence system
+let presenceRef;
+window.addEventListener('beforeunload', () => {
+    if (presenceRef) {
+        updateUserStatus();
+    }
+});        
+
+    </script>
+</body>
+</html>

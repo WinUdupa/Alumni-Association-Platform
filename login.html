@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumni Connect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="login.css" rel="stylesheet">
+</head>
+<body>
+    <div id="loading" class="loading" style="display: none;">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <div id="authContainer" class="auth-container">
+        <div class="auth-form">
+            <h2 id="authTitle">Login to Alumni Connect</h2>
+            <form id="authForm">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+            <div class="toggle-form">
+                <span id="toggleText">Don't have an account?</span>
+                <a id="toggleAuth">Register</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboard" class="dashboard">
+        <nav class="navbar">
+            <h1>Alumni Connect</h1>
+            <div>
+                <div class="nav-container">
+                    <div style = "text-align: left;"class="nav-logo">Alumni Connect</div>
+                    <div class="nav-links">
+                        <a href="index.html">Home</a>
+                        <a href="eventsh.html">Events</a>
+                        <a href="#">Directory</a>
+                        <a href="#">News</a>
+                        <a href="#">Donate</a>
+                <button id="profileBtn" class="btn" style="width: auto; margin-right: 10px;">Profile</button>
+                <button id="logoutBtn" class="btn" style="width: auto; background-color: var(--accent-color);">Logout</button>
+                <button id="searchPageBtn" class="btn" style="width: auto;">Search Alumni</button>
+            </div>
+        </nav>
+
+        <div class="container">
+            <div id="alumniGrid" class="alumni-grid"></div>
+
+            <div id="profileSection" class="profile-section">
+                <h2>My Profile</h2>
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="gradYear">Graduation Year</label>
+                        <input type="number" id="gradYear" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <input type="text" id="department" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="company">Current Company</label>
+                        <input type="text" id="company">
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <input type="text" id="location">
+                    </div>
+                    <button type="submit" class="btn">Save Profile</button>
+                </form>
+            </div>
+        </div>
+
+        <section class="hero">
+            <div class="loader">
+    
+            </div>
+            <div class="hero-content">
+                  <div class="hero-content">
+                <h1>Welcome Back, Alumni!</h1>
+                <p>Stay connected with your alma mater and fellow graduates</p>
+                <button class="cta-button"><i class="cta-animation"></i>Join the Network<i class="animation"></i></button>
+            </div>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="features-container">
+                <div class="feature-card gradient-card">
+                    <h3>Upcoming Events</h3>
+                    <div class="feature-item">
+                        <p class="event-title">Annual Homecoming</p>
+                        <p class="event-date">October 15, 2024</p>
+                    </div>
+                    <div class="feature-item">
+                        <p class="event-title">Career Fair</p>
+                        <p class="event-date">November 5, 2024</p>
+                    </div>
+                    <div class="feature-item">
+                        <p class="event-title">Winter Gala</p>
+                        <p class="event-date">December 12, 2024</p>
+                    </div>
+                </div>
+    
+                <div class="feature-card gradient-card">
+                    <h3>Latest News</h3>
+                    <div class="feature-item">
+                        <p>New Campus Building Inauguration</p>
+                        <p>Read more →</p>
+                    </div>
+                    <div class="feature-item">
+                        <p>Alumni Achievement Awards</p>
+                        <p>Read more →</p>
+                    </div>
+                    <div class="feature-item">
+                        <p>Scholarship Program Launch</p>
+                        <p>Read more →</p>
+                    </div>
+                </div>
+    
+                <div class="feature-card gradient-card">
+                    <h3>Alumni Spotlight</h3>
+                    <div class="feature-item" style="text-align: center;">
+                        <img src="image.png" alt="Alumni of the Month" style="border-radius: 50%; margin: 0 auto 1rem;">
+                        <p>Sarah Johnson, '15</p>
+                        <p>CEO, Tech Innovations Inc.</p>
+                        <p>Leading breakthrough developments in sustainable technology</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    
+        <!-- Stats Section -->
+        <section class="stats">
+            <div class="stats-container">
+                <div class="stat-item">
+                    <h4>50,000+</h4>
+                    <p>Alumni Worldwide</p>
+                </div>
+                <div class="stat-item">
+                    <h4>1,000+</h4>
+                    <p>Events Per Year</p>
+                </div>
+                <div class="stat-item">
+                    <h4>$2M+</h4>
+                    <p>Scholarships Awarded</p>
+                </div>
+                <div class="stat-item">
+                    <h4>100+</h4>
+                    <p>Countries Represented</p>
+                </div>
+            </div>
+        </section>
+    
+        <!-- Footer -->
+        <footer>
+            <div class="footer-container">
+                <div class="footer-section">
+                    <h4>Contact Us</h4>
+                    <p>123 University Ave</p>
+                    <p>City, State 12345</p>
+                    <p>alumni@university.edu</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Career Services</a></li>
+                        <li><a href="#">Give Back</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Facebook</a></li>
+                        <li><a href="#">LinkedIn</a></li>
+                        <li><a href="#">Twitter</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Newsletter</h4>
+                    <p>Stay updated with alumni news and events</p>
+                    <input type="email" placeholder="Enter your email" class="newsletter-input">
+                </div>
+            </div>
+            <div class="copyright">
+                <p>© 2024 Alumni Association. All rights reserved.</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <script type="module">
+        // Import Firebase
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } 
+            from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+        import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, query, where, orderBy, onSnapshot } 
+            from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB_qaDsJY8aHpwULT5pphQ79QbbV0knO_k",
+            authDomain: "alumni-association-60486.firebaseapp.com",
+            projectId: "alumni-association-60486",
+            storageBucket: "alumni-association-60486.appspot.com",
+            messagingSenderId: "228371018445",
+            appId: "1:228371018445:web:46ea6216db88631f3b6f84"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // DOM Elements
+        const authContainer = document.getElementById('authContainer');
+        const dashboard = document.getElementById('dashboard');
+        const authForm = document.getElementById('authForm');
+        const authTitle = document.getElementById('authTitle');
+        const toggleAuth = document.getElementById('toggleAuth');
+        const toggleText = document.getElementById('toggleText');
+        const profileBtn = document.getElementById('profileBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const profileSection = document.getElementById('profileSection');
+        const profileForm = document.getElementById('profileForm');
+        const alumniGrid = document.getElementById('alumniGrid');
+        const loading = document.getElementById('loading');
+        const searchPageBtn = document.getElementById('searchPageBtn');
+
+        let isLogin = true;
+        let currentUser = null;
+
+        // Toggle between login and register
+        toggleAuth.addEventListener('click', () => {
+            isLogin = !isLogin;
+            authTitle.textContent = isLogin ? 'Login to Alumni Connect' : 'Register for Alumni Connect';
+            toggleText.textContent = isLogin ? "Don't have an account?" : 'Already have an account?';
+            toggleAuth.textContent = isLogin ? 'Register' : 'Login';
+        });
+
+        // Auth form submission
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                if (isLogin) {
+                    await signInWithEmailAndPassword(auth, email, password);
+                } else {
+                    await createUserWithEmailAndPassword(auth, email, password);
+                }
+            } catch (error) {
+                alert(error.message);
+                hideLoading();
+            }
+        });
+
+        // Auth state observer
+        onAuthStateChanged(auth, async (user) => {
+            hideLoading();
+            if (user) {
+                currentUser = user;
+                authContainer.style.display = 'none';
+                dashboard.style.display = 'block';
+
+                // Check if the user has data in Firestore
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+
+                // If user data exists, populate the fields, otherwise clear the fields
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    document.getElementById('name').value = userData.name || '';
+                    document.getElementById('gradYear').value = userData.gradYear || '';
+                    document.getElementById('department').value = userData.department || '';
+                    document.getElementById('company').value = userData.company || '';
+                    document.getElementById('location').value = userData.location || '';
+                } else {
+                    // Clear the profile form for new users
+                    document.getElementById('name').value = '';
+                    document.getElementById('gradYear').value = '';
+                    document.getElementById('department').value = '';
+                    document.getElementById('company').value = '';
+                    document.getElementById('location').value = '';
+                }
+            } else {
+                currentUser = null;
+                authContainer.style.display = 'flex';
+                dashboard.style.display = 'none';
+                profileSection.style.display = 'none';
+            }
+        });
+
+        // Profile form submission
+        profileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading();
+
+            const userData = {
+                name: document.getElementById('name').value,
+                gradYear: document.getElementById('gradYear').value,
+                department: document.getElementById('department').value,
+                company: document.getElementById('company').value,
+                location: document.getElementById('location').value,
+                email: currentUser.email
+            };
+
+            try {
+                await setDoc(doc(db, 'users', currentUser.uid), userData);
+                alert('Profile updated successfully!');
+                profileSection.style.display = 'none';
+            } catch (error) {
+                alert(error.message);
+            }
+            hideLoading();
+        });
+
+        // UI Helper functions
+        function showLoading() {
+            loading.style.display = 'flex';
+        }
+
+        function hideLoading() {
+            loading.style.display = 'none';
+        }
+
+        // Profile button click handler
+        profileBtn.addEventListener('click', () => {
+            profileSection.style.display = profileSection.style.display === 'none' ? 'block' : 'none';
+        });
+
+        // Logout button click handler
+        logoutBtn.addEventListener('click', () => {
+        signOut(auth)
+            .then(() => {
+                // Redirect to home page after successful logout
+                window.location.href = 'index.html';
+            })
+            .catch((error) => {
+                alert('Error signing out: ' + error.message);
+            });
+    });
+
+        searchPageBtn.addEventListener('click', () => {
+            window.location.href = 'search.html'; // Redirects to search.html
+        });
+    </script>
+</body>
+</html>

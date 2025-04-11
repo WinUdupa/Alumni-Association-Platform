@@ -1,0 +1,80 @@
+/* Events Section Styles */
+.events-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Section Titles */
+.section-title {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #ff0000; /* Adjusted to the red theme */
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 10px;
+}
+
+/* Event Section Rows */
+.event-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+/* Event Card Styles */
+.event-card {
+    background: linear-gradient(180deg, #ffffff 0%, #f0f0f0 100%); /* Use gradient style */
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    border-radius: 8px;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.event-card:hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px);
+}
+
+.event-image {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+    border: 2px solid #ff0000; /* Red border to match the theme */
+}
+
+.event-card h3 {
+    font-size: 22px;
+    margin: 0 0 10px;
+    color: #660000; /* Darker red for titles */
+}
+
+.event-card .event-date, 
+.event-card .event-location,
+.event-card .event-description {
+    color: #555;
+    margin: 5px 0;
+}
+
+/* Call-to-Action Button */
+.cta-button {
+    display: inline-block;
+    background: linear-gradient(90deg, #ff0000 0%, #cc0000 100%);
+    color: white;
+    padding: 8px 16px;
+    text-align: center;
+    border-radius: 5px;
+    margin-top: 10px;
+    text-decoration: none;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.cta-button:hover {
+    background-color: #b71c1c;
+    transform: scale(1.05);
+}

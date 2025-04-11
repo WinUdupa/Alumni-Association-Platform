@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connections</title>
+    <link href="styles.css" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
+</head>
+<body>
+    <nav>
+        <button id="backToSearchBtn" class="btn">Back to Search</button>
+    </nav>
+    <div class="container">
+        <h2>My Connections</h2>
+        <div id="connectionsList" class="alumni-grid"></div>
+        
+        <h2>Pending Requests</h2>
+        <div id="pendingRequestsList" class="alumni-grid"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+        import { 
+            getAuth, 
+            onAuthStateChanged 
+        } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+        import { 
+            getFirestore, 
+            collection, 
+            query, 
+            where, 
+            getDocs, 
+            doc, 
+            getDoc, 
+            updateDoc 
+        } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB_qaDsJY8aHpwULT5pphQ79QbbV0knO_k",
+            authDomain: "alumni-association-60486.firebaseapp.com",
+            projectId: "alumni-association-60486",
+            storageBucket: "alumni-association-60486.appspot.com",
+            messagingSenderId: "228371018445",
+            appId: "1:228371018445:web:46ea6216db88631f3b6f84"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        const connectionsList = document.getElementById('connectionsList');
+        const pendingRequestsList = document.getElementById('pendingRequestsList');
+        const backToSearchBtn = document.getElementById('backToSearchBtn');
+
+        backToSearchBtn.addEventListener('click', () => {
+            window.location.href = 'search.html';
+        });
+
+        let currentUser = null;
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                console.log("Current User UID:", currentUser.uid);
+                loadConnections();
+                loadPendingRequests();
+            } else {
+                alert("User not logged in. Redirecting to login page.");
+                window.location.href = 'login.html';
+            }
+        });
+
+        async function loadConnections() {
+            connectionsList.innerHTML = '';
+            try {
+                const connectionsQuery1 = query(
+                    collection(db, 'connectRequests'), 
+                    where('to', '==', currentUser.uid), 
+                    where('status', '==', 'accepted')
+                );
+
+                const connectionsQuery2 = query(
+                    collection(db, 'connectRequests'), 
+                    where('from', '==', currentUser.uid), 
+                    where('status', '==', 'accepted')
+                );
+
+                const snapshot1 = await getDocs(connectionsQuery1);
+                const snapshot2 = await getDocs(connectionsQuery2);
+
+                const allConnectionDocs = [...snapshot1.docs, ...snapshot2.docs];
+                const uniqueConnections = new Set();
+
+                for (const requestDoc of allConnectionDocs) {
+                    const data = requestDoc.data();
+                    const otherUserId = data.to === currentUser.uid ? data.from : data.to;
+
+                    if (uniqueConnections.has(otherUserId)) continue;
+                    uniqueConnections.add(otherUserId);
+
+                    try {
+                        const userSnapshot = await getDoc(doc(db, 'users', otherUserId));
+                        if (userSnapshot.exists()) {
+                            const userData = userSnapshot.data();
+                            userData.uid = otherUserId;
+                            displayConnectionCard(userData);
+                        }
+                    } catch (userError) {
+                        console.error('Error fetching user document:', userError);
+                    }
+                }
+
+                if (uniqueConnections.size === 0) {
+                    connectionsList.innerHTML = '<p>No connections found. Start searching and connecting with alumni!</p>';
+                }
+
+            } catch (error) {
+                console.error('Error loading connections:', error);
+                connectionsList.innerHTML = '<p>Error loading connections. Please try again later.</p>';
+            }
+        }
+
+        function displayConnectionCard(userData) {
+            const card = document.createElement('div');
+            card.classList.add('alumni-card');
+            card.innerHTML = `
+                <h3>${userData.fullName || userData.name || 'Anonymous Alumni'}</h3>
+                <p>Department: ${userData.department || 'N/A'}</p>
+                <p>Graduation Year: ${userData.graduationYear || 'N/A'}</p>
+                <p>Email: ${userData.email || 'N/A'}</p>
+                <button class="chat-btn" data-user-id="${userData.uid}">Start Chat</button>
+            `;
+            connectionsList.appendChild(card);
+
+            card.querySelector('.chat-btn').addEventListener('click', (e) => {
+                const chatPartnerId = e.target.getAttribute('data-user-id');
+                window.location.href = `chat.html?userId=${chatPartnerId}`;
+            });
+        }
+
+        async function loadPendingRequests() {
+            pendingRequestsList.innerHTML = '';
+            try {
+                const pendingQuery = query(
+                    collection(db, 'connectRequests'),
+                    where('to', '==', currentUser.uid),
+                    where('status', '==', 'pending')
+                );
+
+                const pendingSnapshot = await getDocs(pendingQuery);
+
+                if (pendingSnapshot.empty) {
+                    pendingRequestsList.innerHTML = '<p>No pending requests at the moment.</p>';
+                    return;
+                }
+
+                for (const requestDoc of pendingSnapshot.docs) {
+                    const requestData = requestDoc.data();
+                    const requesterId = requestData.from;
+
+                    try {
+                        const userSnapshot = await getDoc(doc(db, 'users', requesterId));
+                        if (userSnapshot.exists()) {
+                            const userData = userSnapshot.data();
+                            userData.uid = requesterId;
+                            displayPendingRequestCard(userData, requestDoc.id);
+                        }
+                    } catch (userError) {
+                        console.error('Error fetching user document:', userError);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading pending requests:', error);
+                pendingRequestsList.innerHTML = '<p>Error loading pending requests. Please try again later.</p>';
+            }
+        }
+
+        function displayPendingRequestCard(userData, requestId) {
+            const card = document.createElement('div');
+            card.classList.add('alumni-card');
+            card.innerHTML = `
+                <h3>${userData.fullName || userData.name || 'Anonymous Alumni'}</h3>
+                <p>Department: ${userData.department || 'N/A'}</p>
+                <p>Graduation Year: ${userData.graduationYear || 'N/A'}</p>
+                <p>Email: ${userData.email || 'N/A'}</p>
+                <button class="accept-btn" data-request-id="${requestId}">Accept</button>
+                <button class="decline-btn" data-request-id="${requestId}">Decline</button>
+            `;
+            pendingRequestsList.appendChild(card);
+
+            card.querySelector('.accept-btn').addEventListener('click', (e) => {
+                updateRequestStatus(requestId, 'accepted');
+            });
+
+            card.querySelector('.decline-btn').addEventListener('click', (e) => {
+                updateRequestStatus(requestId, 'declined');
+            });
+        }
+
+        async function updateRequestStatus(requestId, status) {
+            try {
+                const requestRef = doc(db, 'connectRequests', requestId);
+                await updateDoc(requestRef, { status });
+                alert(`Request has been ${status}.`);
+                loadPendingRequests();
+                loadConnections();
+            } catch (error) {
+                console.error(`Error updating request status to ${status}:`, error);
+                alert('Error updating request. Please try again later.');
+            }
+        }
+    </script>
+</body>
+</html>

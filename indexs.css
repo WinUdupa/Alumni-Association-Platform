@@ -1,0 +1,104 @@
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 3rem;  /* Space between loader and content */
+    padding: 2rem;
+}
+
+.loader {
+    position: relative;
+    width: 5em;
+    height: 5em;
+    transform: rotate(165deg);
+    margin-right: 3rem; /* Additional space between loader and text */
+}
+
+.hero-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Rest of your loader animations remain the same */
+.loader:before, .loader:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: block;
+    width: 5em;
+    height: 5em;
+    border-radius: 1em;
+    transform: translate(-50%, -50%);
+}
+
+.loader:before {
+    animation: before8 2s infinite;
+}
+
+.loader:after {
+    animation: after6 2s infinite;
+}
+
+@keyframes before8 {
+    0% {
+        width: 2em;
+        box-shadow: 1em -0.5em rgba(241, 0, 92, 0.955), -1em 0.5em rgba(241, 0, 92, 0.955);
+    }
+
+    35% {
+        width: 10em;
+        box-shadow: 0 -0.5em rgba(241, 0, 92, 0.955), 0 0.5em rgba(241, 0, 92, 0.955);
+    }
+
+    70% {
+        width: 2em;
+        box-shadow: -1em -0.5em rgba(241, 0, 92, 0.955), 1em 0.5em rgba(241, 0, 92, 0.955);
+    }
+
+    100% {
+        box-shadow: 1em -0.5em rgba(241, 0, 92, 0.955), -1em 0.5em rgba(241, 0, 92, 0.955);
+    }
+}
+
+@keyframes after6 {
+    0% {
+        height: 2em;
+        box-shadow: 0.5em 1em rgb(255, 255, 255), -0.5em -1em rgba(255, 255, 255);
+    }
+
+    35% {
+        height: 10em;
+        box-shadow: 0.5em 0 rgba(255, 255, 255), -0.5em 0 rgba(255, 255, 255);
+    }
+
+    70% {
+        height: 2em;
+        box-shadow: 0.5em -1em rgba(255, 255, 255), -0.5em 1em rgba(255, 255, 255);
+    }
+
+    100% {
+        box-shadow: 0.5em 1em rgba(255, 255, 255), -0.5em -1em rgba(255, 255, 255);
+    }
+}
+
+
+@media (max-width: 800px) {
+    .hero-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .loader {
+        margin-right: 0;
+        margin-bottom: 3rem;
+    }
+}

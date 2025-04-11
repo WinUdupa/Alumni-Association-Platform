@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <link href="chat.css" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
+</head>
+<body>
+    <div class="chat-container">
+        <header>
+            <h2 id="chatHeader">Chatting with: </h2>
+        </header>
+        <div id="chatMessages" class="messages-container"></div>
+        <div class="input-container">
+            <input type="text" id="messageInput" placeholder="Type your message..." />
+            <button id="sendMessageBtn">Send</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+import { getFirestore, doc, getDoc, collection, addDoc, query, orderBy, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+
+const firebaseConfig = {
+    apiKey: "AIzaSyB_qaDsJY8aHpwULT5pphQ79QbbV0knO_k",
+    authDomain: "alumni-association-60486.firebaseapp.com",
+    projectId: "alumni-association-60486",
+    storageBucket: "alumni-association-60486.appspot.com",
+    messagingSenderId: "228371018445",
+    appId: "1:228371018445:web:46ea6216db88631f3b6f84"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+const chatMessages = document.getElementById('chatMessages');
+const chatHeader = document.getElementById('chatHeader');
+const messageInput = document.getElementById('messageInput');
+const sendMessageBtn = document.getElementById('sendMessageBtn');
+
+const urlParams = new URLSearchParams(window.location.search);
+const chatPartnerId = urlParams.get('userId');
+let currentUser = null;
+
+// Function to fetch and set partner name
+async function fetchPartnerName(partnerId) {
+    const partnerDoc = await getDoc(doc(db, "users", partnerId));
+    if (partnerDoc.exists()) {
+        const partnerData = partnerDoc.data();
+        chatHeader.innerText = `Chatting with: ${partnerData.name}`;
+    } else {
+        chatHeader.innerText = `Chatting with: Unknown User`;
+    }
+}
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        currentUser = user;
+        fetchPartnerName(chatPartnerId); // Fetch partner name
+        loadMessages();
+    } else {
+        alert("User not logged in. Redirecting to login.");
+        window.location.href = 'login.html';
+    }
+});
+
+async function loadMessages() {
+    const chatId = [currentUser.uid, chatPartnerId].sort().join('_');
+    const messagesQuery = query(
+        collection(db, `chats/${chatId}/messages`),
+        orderBy('timestamp', 'asc')
+    );
+
+    onSnapshot(messagesQuery, (snapshot) => {
+        chatMessages.innerHTML = '';
+        snapshot.forEach((doc) => {
+            const data = doc.data();
+            const messageDiv = document.createElement('div');
+            messageDiv.className = data.senderId === currentUser.uid ? 'message sent' : 'message received';
+            messageDiv.innerHTML = `
+                <p>${data.message}</p>
+                <span>${new Date(data.timestamp.toMillis()).toLocaleTimeString()}</span>
+            `;
+            chatMessages.appendChild(messageDiv);
+        });
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+}
+
+sendMessageBtn.addEventListener('click', async () => {
+    const message = messageInput.value.trim();
+    if (!message) return;
+
+    const chatId = [currentUser.uid, chatPartnerId].sort().join('_');
+    try {
+        await addDoc(collection(db, `chats/${chatId}/messages`), {
+            message,
+            senderId: currentUser.uid,
+            timestamp: new Date(),
+        });
+        messageInput.value = '';
+    } catch (error) {
+        console.error("Error sending message:", error);
+    }
+});
+
+    </script>
+</body>
+</html>

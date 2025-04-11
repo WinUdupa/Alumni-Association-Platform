@@ -1,0 +1,200 @@
+async function loadAlumniData() {
+    showLoading();
+    alumniGrid.innerHTML = ''; // Clear existing content
+    
+    try {
+        const usersRef = collection(db, 'users');
+        const querySnapshot = await getDocs(usersRef);
+        
+        querySnapshot.forEach((doc) => {
+            const userData = doc.data();
+            if (doc.id !== currentUser.uid) {
+                const card = document.createElement('div');
+                card.className = 'alumni-card';
+                card.innerHTML = `
+                    <h3>${userData.name || 'Anonymous Alumni'}</h3>
+                    <p>Graduation Year: ${userData.gradYear || 'N/A'}</p>
+                    <p>Department: ${userData.department || 'N/A'}</p>
+                    <p>Company: ${userData.company || 'N/A'}</p>
+                    <p>Location: ${userData.location || 'N/A'}</p>
+                    <button class="btn" style="margin-top: 10px;">Chat</button>
+                `;
+                
+                // Add chat button event listener
+                const chatButton = card.querySelector('.btn');
+                chatButton.addEventListener('click', () => startChat(doc.id));
+                
+                alumniGrid.appendChild(card);
+            }
+        });
+    } catch (error) {
+        console.error('Error loading alumni data:', error);
+        alert('Error loading alumni data: ' + error.message);
+    } finally {
+        hideLoading();
+    }
+}
+
+// Update the script initialization to include loadAlumniData in the scope
+document.addEventListener('DOMContentLoaded', () => {
+    // Existing Firebase initialization code remains the same
+    
+    // Make loadAlumniData available in the global scope
+    window.loadAlumniData = loadAlumniData;
+});
+        // UI Helper functions
+        function showLoading() {
+            loading.style.display = 'flex';
+        }
+
+        function hideLoading() {
+            loading.style.display = 'none';
+        }
+
+        // Profile button click handler
+        profileBtn.addEventListener('click', () => {
+            profileSection.style.display = profileSection.style.display === 'none' ? 'block' : 'none';
+            chatSection.style.display = 'none';
+        });
+
+        // Logout button click handler
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth).catch((error) => {
+                alert('Error signing out: ' + error.message);
+            });
+        });
+
+        // Chat functionality
+        window.startChat = async function(userId) {
+            currentChat = userId;
+            chatSection.style.display = 'block';
+            profileSection.style.display = 'none';
+            chatMessages.innerHTML = '';
+
+            // Get user details
+            const userDoc = await getDoc(doc(db, 'users', userId));
+            const userData = userDoc.data();
+            
+            // Set up real-time chat listener
+            const chatQuery = query(
+                collection(db, 'messages'),
+                where('participants', 'array-contains', currentUser.uid),
+                orderBy('timestamp', 'asc')
+            );
+
+            onSnapshot(chatQuery, (snapshot) => {
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === 'added') {
+                        const message = change.doc.data();
+                        if (message.participants.includes(userId)) {
+                            const messageElement = document.createElement('div');
+                            messageElement.className = `message ${message.sender === currentUser.uid ? 'sent' : 'received'}`;
+                            messageElement.textContent = message.content;
+                            chatMessages.appendChild(messageElement);
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        }
+                    }
+                });
+            });
+        };   
+
+        searchPageBtn.addEventListener('click', () => {
+    window.location.href = 'search.html'; // Redirects to search.html
+});
+
+
+searchType.addEventListener('change', () => {
+    nameSearch.style.display = 'none';
+    yearSearch.style.display = 'none';
+    branchSearch.style.display = 'none';
+
+    if (searchType.value === 'name') nameSearch.style.display = 'block';
+    if (searchType.value === 'year') yearSearch.style.display = 'block';
+    if (searchType.value === 'branch') branchSearch.style.display = 'block';
+});
+
+// Search button click event
+searchBtn.addEventListener('click', async () => {
+    const searchTypeValue = searchType.value;
+    searchResults.innerHTML = '';
+
+    if (!searchTypeValue) {
+        alert('Please select a search type');
+        return;
+    }
+
+    let alumniQuery;
+
+    if (searchTypeValue === 'name') {
+        const searchName = document.getElementById('searchName').value.toLowerCase();
+        if (!searchName) {
+            alert('Please enter a name to search');
+            return;
+        }
+
+        // Get all alumni and filter by name in JavaScript
+        alumniQuery = query(collection(db, 'users'));
+        try {
+            const querySnapshot = await getDocs(alumniQuery);
+            let foundResults = false;
+            querySnapshot.forEach((doc) => {
+                const userData = doc.data();
+                if (userData.name && userData.name.toLowerCase().includes(searchName)) {
+                    displayAlumniCard(doc.id, userData);
+                    foundResults = true;
+                }
+            });
+            if (!foundResults) {
+                searchResults.innerHTML = '<p>No alumni found matching your search.</p>';
+            }
+        } catch (error) {
+            console.error('Error searching alumni:', error);
+            searchResults.innerHTML = '<p>Error searching alumni. Please try again later.</p>';
+        }
+        return;
+    }
+
+    if (searchTypeValue === 'year') {
+        const searchYear = document.getElementById('searchYear').value;
+        if (!searchYear) {
+            alert('Please enter a graduation year');
+            return;
+        }
+        alumniQuery = query(collection(db, 'users'), where('gradYear', '==', searchYear));
+    }
+
+    if (searchTypeValue === 'branch') {
+        const searchBranch = document.getElementById('searchBranch').value;
+        if (!searchBranch) {
+            alert('Please select a branch');
+            return;
+        }
+        alumniQuery = query(collection(db, 'users'), where('department', '==', searchBranch));
+    }
+
+    try {
+        const querySnapshot = await getDocs(alumniQuery);
+        if (querySnapshot.empty) {
+            searchResults.innerHTML = '<p>No alumni found.</p>';
+        } else {
+            querySnapshot.forEach((doc) => {
+                displayAlumniCard(doc.id, doc.data());
+            });
+        }
+    } catch (error) {
+        console.error('Error searching alumni:', error);
+        searchResults.innerHTML = '<p>Error searching alumni. Please try again later.</p>';
+    }
+});
+
+let currentUser = null;
+
+// Ensure currentUser is set when a user is logged in
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        currentUser = user;
+    } else {
+        alert("User not logged in. Redirecting to login page.");
+        window.location.href = 'login.html';
+    }
+});
