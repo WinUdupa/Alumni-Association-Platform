@@ -36,16 +36,7 @@ The Alumni Association Platform is a web-based portal designed to connect colleg
 3. Create or edit a profile, search for alumni, or check event updates.
 4. Test the chat feature (if available) by initiating a conversation with another user.
 
-## Contributing
-We welcome contributions to enhance the platform! To contribute:
-1. Fork the repository.
-2. Create a feature branch (`git checkout -b feature/add-event-rsvp`).
-3. Commit your changes (`git commit -m 'Add RSVP feature for events'`).
-4. Push to the branch (`git push origin feature/add-event-rsvp`).
-5. Open a pull request with a detailed description of your changes.
 
-## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## Contact
 For questions, suggestions, or bug reports, please open an issue on [GitHub](https://github.com/WinUdupa/Alumni-Association-Platform/issues) or contact the maintainer.
